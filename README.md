@@ -2,26 +2,23 @@
 
 **[kalakaritzu.github.io/caret](https://kalakaritzu.github.io/caret)**
 
-A fast, lightweight code editor for Windows built with Electron, CodeMirror 5, and xterm.js.
+Code editor for Windows. Tabs, split view, built-in terminal. No bloat.
 
-## Features
+## What it does
 
-- **Tabbed editing** — open multiple files, drag tabs onto each other to create a split view
-- **Split view** — edit two files side by side with a resizable divider
-- **Integrated terminal** — PowerShell tab with full xterm.js rendering
-- **File explorer** — sidebar with create, rename, delete, and drag-to-open
-- **Syntax highlighting** — 30+ languages via CodeMirror 5
-- **Find & replace** — regex, case-sensitive, whole-word with live match count
-- **Autocomplete** — keyword hints for all supported languages
-- **Code folding** — fold braces, indentation, comments, and markdown sections
-- **Zen mode** — F11 to hide everything but the editor
-- **Session restore** — tabs, split state, and sidebar reopen on next launch
-- **Word wrap** — toggle per session, applies to both editors and terminal
-- **Smooth caret** — animated cursor in both editors and terminal
+- Tabbed editing, drag one tab onto another to split
+- PowerShell terminal as a tab
+- File explorer sidebar (open folder, create/rename/delete files, drag to open)
+- Syntax highlighting for 30+ languages
+- Find & replace with regex support
+- Autocomplete, code folding, active line highlight
+- Zen mode (F11)
+- Session restore on relaunch
+- Word wrap toggle (Alt+Z), works in terminal too
 
-## Getting Started
+## Running it
 
-**Prerequisites:** Node.js 18+, npm
+Node 18+ required.
 
 ```bash
 git clone https://github.com/kalakaritzu/caret.git
@@ -30,29 +27,24 @@ npm install
 npm start
 ```
 
-## Keyboard Shortcuts
+## Shortcuts
 
-| Action | Shortcut |
+| | |
 |---|---|
 | New tab | Ctrl+T |
 | New terminal | Ctrl+Shift+T |
 | Close tab | Ctrl+W |
-| Save | Ctrl+S |
-| Save As | Ctrl+Shift+S |
-| Find | Ctrl+F |
-| Find & Replace | Ctrl+H |
-| Toggle word wrap | Alt+Z |
-| Toggle sidebar | Ctrl+B |
-| Cycle tabs | Ctrl+Tab / Ctrl+Shift+Tab |
+| Save / Save As | Ctrl+S / Ctrl+Shift+S |
+| Find / Replace | Ctrl+F / Ctrl+H |
+| Word wrap | Alt+Z |
+| Sidebar | Ctrl+B |
+| Cycle tabs | Ctrl+Tab |
 | Fold / unfold | Ctrl+Shift+[ / ] |
 | Zen mode | F11 |
 
-## Tech Stack
+## Stack
 
-- [Electron 28](https://www.electronjs.org/)
-- [CodeMirror 5](https://codemirror.net/5/)
-- [xterm.js v6](https://xtermjs.org/)
-- [node-pty](https://github.com/microsoft/node-pty)
+Electron 28, CodeMirror 5, xterm.js v6, node-pty.
 
 ## License
 
