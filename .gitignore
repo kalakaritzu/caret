@@ -4,4 +4,5 @@ dist/
 *.bak
 C:Projects*/
 CaretSetup.zip
+CaretSetup.exe
 installer/resources/app.zip
