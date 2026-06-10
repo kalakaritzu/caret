@@ -1,0 +1,55 @@
+{
+  "name": "caret",
+  "version": "1.0.0",
+  "description": "A modern, lightweight code editor",
+  "main": "main.js",
+  "scripts": {
+    "start": "set ELECTRON_RUN_AS_NODE=& electron .",
+    "make-icon": "node scripts/make-icon.js",
+    "dist": "electron-builder --win"
+  },
+  "keywords": [
+    "editor",
+    "notepad",
+    "code"
+  ],
+  "author": "",
+  "license": "MIT",
+  "build": {
+    "appId": "com.caret.editor",
+    "productName": "Caret",
+    "icon": "assets/icon.ico",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "shortcutName": "Caret",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.13.3",
+    "jimp": "^0.22.12",
+    "playwright-core": "^1.60.0",
+    "to-ico": "^1.1.5"
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "codemirror": "^5.65.16",
+    "node-pty": "^1.1.0"
+  }
+}

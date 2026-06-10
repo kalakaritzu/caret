@@ -1,0 +1,5 @@
+node_modules/
+dist/
+*.txt
+*.bak
+C:Projects*/

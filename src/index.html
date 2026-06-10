@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: file:; font-src 'self' data:;">
+  <title>Caret</title>
+
+  <link rel="stylesheet" href="../node_modules/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="../node_modules/codemirror/addon/hint/show-hint.css">
+  <link rel="stylesheet" href="../node_modules/@xterm/xterm/css/xterm.css">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+
+  <!-- Custom menu bar (drag handle) -->
+  <div id="menu-bar">
+    <div class="menu-item"><button class="menu-btn" data-menu="file">File</button></div>
+    <div class="menu-item"><button class="menu-btn" data-menu="edit">Edit</button></div>
+    <div class="menu-item"><button class="menu-btn" data-menu="view">View</button></div>
+    <div class="menu-item"><button class="menu-btn" data-menu="language">Language</button></div>
+    <button class="menu-btn" id="settings-btn">Settings</button>
+    <!-- Window controls — position:fixed so they escape overflow:hidden clipping during zen mode animation -->
+    <div id="window-controls">
+      <button id="btn-minimize" class="win-btn" title="Minimize">
+        <svg width="10" height="2" viewBox="0 0 10 2" fill="none">
+          <line x1="0" y1="1" x2="10" y2="1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button id="btn-maximize" class="win-btn" title="Maximize">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <rect x="0.5" y="0.5" width="9" height="9" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </button>
+      <button id="btn-close" class="win-btn win-btn-close" title="Close">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="tab-bar">
+    <div id="tabs-scroll">
+      <div id="tabs"></div>
+      <button id="new-tab-btn" title="New Tab (Ctrl+T) · Shift+click for Terminal (Ctrl+Shift+T)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+
+  <div id="main-area">
+
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <span id="sidebar-folder-name">EXPLORER</span>
+        <button id="sidebar-open-btn" title="Open Folder">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 4C1 3.45 1.45 3 2 3h3.17L6.5 4.5H12c.55 0 1 .45 1 1V11c0 .55-.45 1-1 1H2c-.55 0-1-.45-1-1V4z" stroke="currentColor" stroke-width="1.2" fill="none"/>
+          </svg>
+        </button>
+      </div>
+      <div id="sidebar-path-bar">
+        <input id="sidebar-path-input" type="text" placeholder="Enter path…" spellcheck="false" autocomplete="off">
+        <button id="sidebar-path-browse" title="Browse…">Browse</button>
+      </div>
+      <div id="sidebar-tree">
+        <div class="sidebar-empty">Open a folder to browse files</div>
+      </div>
+    </div>
+
+    <div id="sidebar-resizer"></div>
+
+    <div id="editor-stack">
+      <div id="editor-container"></div>
+
+      <div id="find-bar">
+    <div id="find-bar-inner">
+      <div class="find-row">
+        <div class="find-field-wrap">
+          <svg class="find-icon" width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M9 9l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <input type="text" id="find-input" placeholder="Find" spellcheck="false" autocomplete="off">
+          <span id="find-count"></span>
+        </div>
+        <div class="find-options">
+          <button class="opt-btn" id="opt-case" title="Match Case (Alt+C)">Aa</button>
+          <button class="opt-btn" id="opt-word" title="Whole Word (Alt+W)">Ab|</button>
+          <button class="opt-btn" id="opt-regex" title="Regex (Alt+R)">.*</button>
+        </div>
+        <div class="find-nav">
+          <button id="find-prev-btn" title="Previous Match (Shift+Enter)">
+            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M5 8L1 4l8 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </button>
+          <button id="find-next-btn" title="Next Match (Enter)">
+            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M5 2l4 4H1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </button>
+          <button id="find-close-btn" title="Close (Escape)">
+            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="replace-row" id="replace-row">
+        <div class="find-field-wrap">
+          <svg class="find-icon" width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M2 4h9M2 8h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <path d="M9.5 6l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <input type="text" id="replace-input" placeholder="Replace" spellcheck="false" autocomplete="off">
+        </div>
+        <div class="replace-btns">
+          <button id="replace-one-btn">Replace</button>
+          <button id="replace-all-btn">Replace All</button>
+        </div>
+      </div>
+    </div>
+    </div><!-- /#find-bar -->
+    </div><!-- /#editor-stack -->
+  </div><!-- /#main-area -->
+
+  <div id="status-bar">
+    <div id="status-left">
+      <button id="status-lang" class="status-btn" title="Change Language">Plain Text</button>
+    </div>
+    <div id="status-right">
+      <span id="status-eol">LF</span>
+      <span id="status-encoding">UTF-8</span>
+      <span id="status-cursor">Ln 1, Col 1</span>
+      <span id="status-selection"></span>
+    </div>
+  </div>
+
+  <!-- xterm.js terminal -->
+  <script src="../node_modules/@xterm/xterm/lib/xterm.js"></script>
+  <script src="../node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
+
+  <!-- CodeMirror core -->
+  <script src="../node_modules/codemirror/lib/codemirror.js"></script>
+  <script src="../node_modules/codemirror/addon/mode/simple.js"></script>
+
+  <!-- Modes (order matters: xml + js + css before htmlmixed) -->
+  <script src="../node_modules/codemirror/mode/xml/xml.js"></script>
+  <script src="../node_modules/codemirror/mode/javascript/javascript.js"></script>
+  <script src="../node_modules/codemirror/mode/css/css.js"></script>
+  <script src="../node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+  <script src="../node_modules/codemirror/mode/markdown/markdown.js"></script>
+  <script src="../node_modules/codemirror/mode/python/python.js"></script>
+  <script src="../node_modules/codemirror/mode/shell/shell.js"></script>
+  <script src="../node_modules/codemirror/mode/clike/clike.js"></script>
+  <script src="../node_modules/codemirror/mode/sql/sql.js"></script>
+  <script src="../node_modules/codemirror/mode/yaml/yaml.js"></script>
+  <script src="../node_modules/codemirror/mode/rust/rust.js"></script>
+  <script src="../node_modules/codemirror/mode/go/go.js"></script>
+  <script src="../node_modules/codemirror/mode/php/php.js"></script>
+  <script src="../node_modules/codemirror/mode/ruby/ruby.js"></script>
+  <script src="../node_modules/codemirror/mode/lua/lua.js"></script>
+  <script src="../node_modules/codemirror/mode/swift/swift.js"></script>
+  <script src="../node_modules/codemirror/mode/dart/dart.js"></script>
+  <script src="../node_modules/codemirror/mode/r/r.js"></script>
+  <script src="../node_modules/codemirror/mode/perl/perl.js"></script>
+  <script src="../node_modules/codemirror/mode/groovy/groovy.js"></script>
+  <script src="../node_modules/codemirror/mode/haskell/haskell.js"></script>
+  <script src="../node_modules/codemirror/mode/powershell/powershell.js"></script>
+  <script src="../node_modules/codemirror/mode/toml/toml.js"></script>
+  <script src="../node_modules/codemirror/mode/dockerfile/dockerfile.js"></script>
+  <script src="../node_modules/codemirror/mode/diff/diff.js"></script>
+  <script src="../node_modules/codemirror/mode/vb/vb.js"></script>
+  <script src="../node_modules/codemirror/mode/vbscript/vbscript.js"></script>
+  <script src="../node_modules/codemirror/mode/properties/properties.js"></script>
+  <script src="../node_modules/codemirror/mode/coffeescript/coffeescript.js"></script>
+  <script src="../node_modules/codemirror/mode/julia/julia.js"></script>
+  <script src="../node_modules/codemirror/mode/nginx/nginx.js"></script>
+  <script src="../node_modules/codemirror/mode/erlang/erlang.js"></script>
+  <script src="../node_modules/codemirror/mode/clojure/clojure.js"></script>
+
+  <!-- Hint / autocomplete -->
+  <script src="../node_modules/codemirror/addon/hint/show-hint.js"></script>
+  <script src="../node_modules/codemirror/addon/hint/anyword-hint.js"></script>
+  <script src="../node_modules/codemirror/addon/hint/javascript-hint.js"></script>
+  <script src="../node_modules/codemirror/addon/hint/css-hint.js"></script>
+  <script src="../node_modules/codemirror/addon/hint/html-hint.js"></script>
+  <script src="../node_modules/codemirror/addon/hint/xml-hint.js"></script>
+  <script src="../node_modules/codemirror/addon/hint/sql-hint.js"></script>
+
+  <!-- Addons -->
+  <script src="../node_modules/codemirror/addon/edit/matchbrackets.js"></script>
+  <script src="../node_modules/codemirror/addon/edit/closebrackets.js"></script>
+  <script src="../node_modules/codemirror/addon/selection/active-line.js"></script>
+  <script src="../node_modules/codemirror/addon/search/searchcursor.js"></script>
+  <script src="../node_modules/codemirror/addon/comment/comment.js"></script>
+  <script src="../node_modules/codemirror/addon/display/autorefresh.js"></script>
+  <!-- Fold addons (xml-fold must come before others) -->
+  <script src="../node_modules/codemirror/addon/fold/xml-fold.js"></script>
+  <script src="../node_modules/codemirror/addon/fold/foldcode.js"></script>
+  <script src="../node_modules/codemirror/addon/fold/foldgutter.js"></script>
+  <script src="../node_modules/codemirror/addon/fold/brace-fold.js"></script>
+  <script src="../node_modules/codemirror/addon/fold/indent-fold.js"></script>
+  <script src="../node_modules/codemirror/addon/fold/comment-fold.js"></script>
+  <script src="../node_modules/codemirror/addon/fold/markdown-fold.js"></script>
+
+  <!-- Zen mode exit hint -->
+  <div id="zen-toast">Zen Mode &nbsp;·&nbsp; F11 to exit</div>
+
+  <!-- Tab right-click context menu -->
+  <div id="tab-context-menu"></div>
+
+  <!-- Custom save/close dialog (replaces native dialog.showMessageBox) -->
+  <div id="dialog-overlay">
+    <div id="dialog-box">
+      <div id="dialog-header">
+        <div id="dialog-content">
+          <div id="dialog-message"></div>
+          <div id="dialog-detail"></div>
+        </div>
+      </div>
+      <div id="dialog-buttons">
+        <button class="dialog-btn primary" id="dialog-btn-save">Save</button>
+        <button class="dialog-btn" id="dialog-btn-dontsave">Don't Save</button>
+        <button class="dialog-btn" id="dialog-btn-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
