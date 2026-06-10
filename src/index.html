@@ -227,6 +227,26 @@
     </div>
   </div>
 
+  <!-- Update available dialog -->
+  <div id="update-overlay">
+    <div id="update-box">
+      <div id="update-header">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Update Available
+      </div>
+      <div id="update-body">
+        <span id="update-version-new"></span> is ready to download.
+        <br>You have <span id="update-version-current"></span>.
+      </div>
+      <div id="update-actions">
+        <button id="update-btn-later">Later</button>
+        <button id="update-btn-download">Download Update</button>
+      </div>
+    </div>
+  </div>
+
   <script src="renderer.js"></script>
 </body>
 </html>

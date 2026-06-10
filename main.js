@@ -1,7 +1,9 @@
 'use strict';
-const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
+const { version } = require('./package.json');
 
 let pty;
 try { pty = require('node-pty'); } catch (e) { console.error('node-pty unavailable:', e.message); }
@@ -44,6 +46,7 @@ function createWindow() {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
+    checkForUpdates();
     const args = process.argv.slice(2).filter(a => !a.startsWith('--'));
     if (args.length > 0) {
       args.forEach(filePath => {
@@ -212,6 +215,40 @@ ipcMain.handle('terminal:destroy', (event, termId) => {
   if (proc) { try { proc.kill(); } catch {} termProcesses.delete(termId); }
 });
 
+
+function newerThan(latest, current) {
+  const l = latest.replace(/^v/, '').split('.').map(Number);
+  const c = current.replace(/^v/, '').split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if ((l[i] || 0) > (c[i] || 0)) return true;
+    if ((l[i] || 0) < (c[i] || 0)) return false;
+  }
+  return false;
+}
+
+function checkForUpdates() {
+  const req = https.get({
+    hostname: 'api.github.com',
+    path: '/repos/kalakaritzu/caret/releases/latest',
+    headers: { 'User-Agent': 'Caret-Editor' },
+  }, res => {
+    let raw = '';
+    res.on('data', d => { raw += d; });
+    res.on('end', () => {
+      try {
+        const release = JSON.parse(raw);
+        const latest = release.tag_name;
+        if (!latest || !newerThan(latest, version)) return;
+        const asset = release.assets?.find(a => a.name.endsWith('.exe'));
+        const downloadUrl = asset?.browser_download_url || release.html_url;
+        mainWindow?.webContents.send('update-available', { latest, downloadUrl });
+      } catch {}
+    });
+  });
+  req.on('error', () => {});
+}
+
+ipcMain.on('open-external', (_, url) => { shell.openExternal(url); });
 
 app.whenReady().then(createWindow);
 

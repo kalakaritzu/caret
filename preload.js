@@ -34,4 +34,7 @@ contextBridge.exposeInMainWorld('api', {
   onTerminalData:  (cb) => ipcRenderer.on('terminal:data', (_, p) => cb(p)),
   onTerminalExit:  (cb) => ipcRenderer.on('terminal:exit', (_, p) => cb(p)),
 
+  onUpdateAvailable: (cb) => ipcRenderer.on('update-available', (_, info) => cb(info)),
+  openExternal: (url) => ipcRenderer.send('open-external', url),
+
 });

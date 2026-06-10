@@ -3687,6 +3687,19 @@ window.api.onWindowClosing(() => handleWindowClose());
 window.api.onTerminalData(({ termId, data }) => { termDataHandlers.get(termId)?.(data); });
 window.api.onTerminalExit(({ termId }) => { termExitHandlers.get(termId)?.(); });
 
+// Update notification
+window.api.onUpdateAvailable(({ latest, downloadUrl }) => {
+  const overlay = document.getElementById('update-overlay');
+  document.getElementById('update-version-new').textContent = `Caret ${latest}`;
+  document.getElementById('update-version-current').textContent = `v${appSettings.version || '1.0.0'}`;
+  overlay.classList.add('show');
+  document.getElementById('update-btn-later').onclick = () => overlay.classList.remove('show');
+  document.getElementById('update-btn-download').onclick = () => {
+    window.api.openExternal(downloadUrl);
+    overlay.classList.remove('show');
+  };
+});
+
 /* ================================================================
    FIND BAR EVENTS
    ================================================================ */

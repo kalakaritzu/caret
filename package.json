@@ -6,7 +6,8 @@
   "scripts": {
     "start": "set ELECTRON_RUN_AS_NODE=& electron .",
     "make-icon": "node scripts/make-icon.js",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder --win --dir",
+    "dist-zip": "powershell -Command \"if(Test-Path installer/resources/app.zip){Remove-Item installer/resources/app.zip}; Compress-Archive -Path dist/win-unpacked/* -DestinationPath installer/resources/app.zip\""
   },
   "keywords": [
     "editor",
@@ -27,15 +28,7 @@
       "node_modules/**/*"
     ],
     "win": {
-      "target": "nsis"
-    },
-    "nsis": {
-      "oneClick": true,
-      "installerIcon": "assets/icon.ico",
-      "uninstallerIcon": "assets/icon.ico",
-      "shortcutName": "Caret",
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "target": [{ "target": "dir", "arch": ["x64"] }]
     }
   },
   "devDependencies": {

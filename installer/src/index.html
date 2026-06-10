@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';">
+  <title>Caret Setup</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="titlebar">
+    <span id="titlebar-title">Caret Setup</span>
+    <div id="titlebar-controls">
+      <button id="btn-min" onclick="window.setup.minimize()">
+        <svg width="10" height="2" viewBox="0 0 10 2"><line x1="0" y1="1" x2="10" y2="1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </button>
+      <button id="btn-close" onclick="window.setup.close()">
+        <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="layout">
+
+    <!-- Sidebar (manual mode only) -->
+    <div id="sidebar">
+      <div id="sidebar-logo">Caret</div>
+      <div id="sidebar-ver">v1.0.0</div>
+      <div id="sidebar-steps">
+        <div class="step" data-step="scope">Install scope</div>
+        <div class="step" data-step="location">Location</div>
+        <div class="step" data-step="options">Options</div>
+        <div class="step" data-step="review">Review</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div id="content">
+
+      <!-- Screen: Welcome -->
+      <div class="screen active" id="screen-welcome">
+        <div class="welcome-top">
+          <div class="welcome-logo">Caret</div>
+          <div class="welcome-tagline">Code editor for Windows</div>
+          <div class="welcome-version" id="w-version">v1.0.0</div>
+        </div>
+        <div class="welcome-choices">
+          <button class="choice-btn" id="btn-quick">
+            <div class="choice-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 9l4 4 8-8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="choice-text">
+              <strong>Quick Install</strong>
+              <span>Install for the current user with default settings</span>
+            </div>
+          </button>
+          <button class="choice-btn" id="btn-manual">
+            <div class="choice-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="choice-text">
+              <strong>Manual Install</strong>
+              <span>Choose location, scope, and shortcuts</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Screen: Scope -->
+      <div class="screen" id="screen-scope">
+        <h2>Who should Caret be installed for?</h2>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="scope" value="user" checked>
+            <div>
+              <strong>Just for me</strong>
+              <span id="scope-user-path"></span>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="scope" value="all">
+            <div>
+              <strong>All users</strong>
+              <span>C:\Program Files\Caret &nbsp;·&nbsp; requires administrator</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Screen: Location -->
+      <div class="screen" id="screen-location">
+        <h2>Install Location</h2>
+        <div class="path-row">
+          <input id="path-input" type="text" spellcheck="false" autocomplete="off">
+          <button id="btn-browse">Browse</button>
+        </div>
+        <p class="hint">Caret will be installed in the folder above.</p>
+      </div>
+
+      <!-- Screen: Options -->
+      <div class="screen" id="screen-options">
+        <h2>Additional Options</h2>
+        <div class="check-group">
+          <label class="check-option">
+            <input type="checkbox" id="opt-desktop" checked>
+            <span>Create a desktop shortcut</span>
+          </label>
+          <label class="check-option">
+            <input type="checkbox" id="opt-startmenu" checked>
+            <span>Add to Start Menu</span>
+          </label>
+          <label class="check-option">
+            <input type="checkbox" id="opt-launch">
+            <span>Launch Caret after installation</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Screen: Review -->
+      <div class="screen" id="screen-review">
+        <h2>Ready to Install</h2>
+        <div class="review-table">
+          <div class="review-row"><span>Version</span><span id="rev-version">v1.0.0</span></div>
+          <div class="review-row"><span>Location</span><span id="rev-path">—</span></div>
+          <div class="review-row"><span>Scope</span><span id="rev-scope">Current user</span></div>
+          <div class="review-row"><span>Shortcuts</span><span id="rev-shortcuts">Desktop, Start Menu</span></div>
+        </div>
+      </div>
+
+      <!-- Screen: Installing -->
+      <div class="screen" id="screen-installing">
+        <div class="installing-wrap">
+          <div class="installing-label" id="prog-step">Preparing...</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="prog-fill"></div>
+          </div>
+          <div class="installing-pct" id="prog-pct">0%</div>
+        </div>
+      </div>
+
+      <!-- Screen: Done -->
+      <div class="screen" id="screen-done">
+        <div class="done-wrap">
+          <div class="done-check">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M6 14l6 6 10-10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="done-title">Caret is installed</div>
+          <div class="done-sub" id="done-path"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div id="bottom-bar">
+    <button id="btn-back" class="bar-btn secondary">Back</button>
+    <div id="bar-right">
+      <button id="btn-cancel" class="bar-btn secondary">Cancel</button>
+      <button id="btn-next" class="bar-btn primary">Next</button>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
