@@ -1,5 +1,7 @@
 # Caret
 
+**[kalakaritzu.github.io/caret](https://kalakaritzu.github.io/caret)**
+
 A fast, lightweight code editor for Windows built with Electron, CodeMirror 5, and xterm.js.
 
 ## Features
