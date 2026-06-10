@@ -65,6 +65,10 @@ window.setup.onProgress(({ step, percent }) => {
   $('prog-pct').textContent = percent + '%';
 });
 
+// ── Titlebar ───────────────────────────────────────────────────────
+$('btn-min').onclick   = () => window.setup.minimize();
+$('btn-close').onclick = () => window.setup.close();
+
 // ── Welcome screen ─────────────────────────────────────────────────
 setBottomBar({ back: false, cancelLabel: 'Cancel', nextLabel: 'Next', nextDisabled: true });
 $('btn-next').style.display = 'none';
