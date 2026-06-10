@@ -12,7 +12,7 @@
     "productName": "Caret Setup",
     "icon": "../assets/icon.ico",
     "win": {
-      "target": [{ "target": "dir", "arch": ["x64"] }]
+      "target": [{ "target": "portable", "arch": ["x64"] }]
     },
     "extraResources": [
       { "from": "resources/app.zip", "to": "app.zip" }
